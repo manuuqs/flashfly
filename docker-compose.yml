@@ -62,10 +62,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
-    # Para mantener los datos aunque reinicies:
-    #volumes:
-    #  - pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
 
   # 🗃️ Base de datos MySQL (alternativa)
   db-mysql:
@@ -83,7 +80,7 @@ services:
     #  - mysqldata:/var/lib/mysql
 
 # 🔁 Volúmenes persistentes (opcional)
-#volumes:
-#  pgdata:
+volumes:
+  pgdata:
 #  mysqldata:
 
