@@ -1,19 +1,6 @@
 Si vas a usar PostgreSQL (por ahora), entra en tu gestor (pgAdmin o Docker si ya lo tienes corriendo) y crea la base de datos:
 CREATE DATABASE flashfly;
 
-Configura tu application.properties
-
-Ya que tienes el driver, asegúrate de tener algo como esto en
-src/main/resources/application.properties:
-
-spring.datasource.url=jdbc:postgresql://localhost:5432/flashfly
-spring.datasource.username=postgres
-spring.datasource.password=postgres
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-
-Si usarás Docker, recuerda cambiar la URL a jdbc:postgresql://db-postgres:5432/flashfly.
-
 Estructura recomendada del backend
 
 En tu carpeta backend/src/main/java/com/flashfly/, deberías tener esta organización:
