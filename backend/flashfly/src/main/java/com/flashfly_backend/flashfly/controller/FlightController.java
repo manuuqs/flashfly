@@ -2,10 +2,7 @@ package com.flashfly_backend.flashfly.controller;
 
 import com.amadeus.resources.FlightDestination;
 import com.flashfly_backend.flashfly.service.AmadeusService;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/flights")
@@ -18,6 +15,7 @@ public class FlightController {
         this.amadeusService = amadeusService;
     }
 
+    @GetMapping("/destinations")
     public FlightDestination[] getFlightDestinations(@RequestParam String origin, @RequestParam int maxPrice) throws Exception {
         return amadeusService.getFlightDestinations(origin, maxPrice);
     }
