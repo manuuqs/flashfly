@@ -1,14 +1,17 @@
-version: "3.8"
 
 services:
   # 🖥️ Backend - Spring Boot
   backend:
-    build: ./backend
-    container_name: flashfly-backend
+    build:
+      context: ./backend/flashfly
+
+    container_name: flashfly
     ports:
       - "8080:8080"
     depends_on:
       - db-postgres   # 🔁 cambia aquí a "db-mysql" si quieres usar MySQL
+    env_file:
+      - .env
     environment:
       # Para PostgreSQL
       SPRING_DATASOURCE_URL: jdbc:postgresql://db-postgres:5432/flashfly
@@ -16,39 +19,6 @@ services:
       SPRING_DATASOURCE_PASSWORD: postgres
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
-
-      # Para MySQL (activa estas líneas si prefieres MySQL)
-      #SPRING_DATASOURCE_URL: jdbc:mysql://db-mysql:3306/flashfly?useSSL=false&serverTimezone=UTC
-      #SPRING_DATASOURCE_USERNAME: flashfly
-      #SPRING_DATASOURCE_PASSWORD: flashfly
-      #SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      #SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQL8Dialect
-
-      #Si quieres usar MySQL
-      #
-      #Cambia en el servicio backend:
-      #
-      #depends_on:
-      #  - db-mysql
-      #
-      #
-      #Comenta las variables de PostgreSQL y descomenta las de MySQL.
-      #
-      #Ejecuta:
-      #
-      #docker-compose up --build
-      #
-
-  # 🌐 Frontend - React
-  frontend:
-    build: ./frontend
-    container_name: flashfly-frontend
-    ports:
-      - "3000:3000"
-    stdin_open: true
-    tty: true
-    depends_on:
-      - backend
 
   # 🗄️ Base de datos PostgreSQL
   db-postgres:
@@ -63,21 +33,6 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-
-  # 🗃️ Base de datos MySQL (alternativa)
-  db-mysql:
-    image: mysql:8
-    container_name: flashfly-mysql
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: flashfly
-      MYSQL_USER: flashfly
-      MYSQL_PASSWORD: flashfly
-    ports:
-      - "3306:3306"
-    #volumes:
-    #  - mysqldata:/var/lib/mysql
 
 # 🔁 Volúmenes persistentes (opcional)
 volumes:

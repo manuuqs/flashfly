@@ -14,8 +14,8 @@ public class AmadeusService {
     private final Amadeus amadeus;
 
     public AmadeusService(
-            @Value("${amadeus.api.key}") String apiKey,
-            @Value("${amadeus.api.secret}") String apiSecret
+            @Value("${amadeus.client-id}") String apiKey,
+            @Value("${amadeus.client-secret}") String apiSecret
     ) {
         System.out.println("API KEY: " + apiKey);
         System.out.println("API SECRET: " + apiSecret);
