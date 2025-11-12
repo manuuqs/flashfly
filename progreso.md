@@ -121,3 +121,7 @@ the attribute `version` is obsolete, it will be ignored
 
 no es un error.
 Docker Compose v2 ya no requiere la línea version: "3.8", pero puedes dejarla o quitarla sin problema.
+
+
+para isntalar dependencias de goolge auth en frontend he usado npm install @react-oauth/google
+y npm install @react-oauth/google jwt-decode

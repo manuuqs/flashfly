@@ -63,8 +63,6 @@ body{
     z-index: 1;
 }
 
-
-
 .container p{
     font-size: 14px;
     line-height: 20px;
@@ -235,4 +233,10 @@ body{
 
 .container.active .toggle-right{
     transform: translateX(200%);
+}
+
+.google-login {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
 }
