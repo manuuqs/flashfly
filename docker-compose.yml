@@ -4,8 +4,7 @@ services:
   backend:
     build:
       context: ./backend/flashfly
-
-    container_name: flashfly
+    container_name: flashfly-back
     ports:
       - "8080:8080"
     depends_on:
@@ -33,6 +32,19 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+
+  frontend:
+    build:
+      context: ./frontend/flashfly
+    container_name: flashfly-front
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    env_file:
+      - .env
+    environment:
+      REACT_APP_BACKEND_URL: http://localhost:8080
 
 # 🔁 Volúmenes persistentes (opcional)
 volumes:
