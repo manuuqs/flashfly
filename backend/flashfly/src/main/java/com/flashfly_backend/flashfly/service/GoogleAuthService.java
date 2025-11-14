@@ -14,14 +14,10 @@ public class GoogleAuthService {
 
     private final GoogleIdTokenVerifier verifier;
 
-    @Value("${google.client.id}")
-    private String googleClientId;
-
-
-    public GoogleAuthService() throws Exception {
+    public GoogleAuthService(@Value("${google.client.id}") String googleClientId) throws Exception {
         this.verifier = new GoogleIdTokenVerifier.Builder(
                 GoogleNetHttpTransport.newTrustedTransport(),
-                new GsonFactory()  // 👈 Usa GsonFactory en lugar de JacksonFactory
+                new GsonFactory()
         )
                 .setAudience(Collections.singletonList(googleClientId))
                 .build();
