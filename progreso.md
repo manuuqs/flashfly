@@ -123,5 +123,58 @@ no es un error.
 Docker Compose v2 ya no requiere la línea version: "3.8", pero puedes dejarla o quitarla sin problema.
 
 
+
+
+estructura front
+
+flashfly/
+│
+├── src/
+│   ├── assets/
+│   │   ├── images/
+│   │   │   ├── avionLogin.avif
+│   │   │   ├── google-icon.svg
+│   │   │   └── logo.svg
+│   │   └── icons/
+│   │       └── ...
+│   │
+│   ├── components/
+│   │   ├── buttons/
+│   │   │   └── GoogleButton.jsx
+│   │   ├── forms/
+│   │   │   ├── LoginForm.jsx
+│   │   │   └── RegisterForm.jsx
+│   │   └── ui/
+│   │       └── Input.jsx (opcional)
+│   │
+│   ├── context/
+│   │   └── AuthContext.jsx
+│   │
+│   ├── hooks/
+│   │   └── useAuth.js
+│   │
+│   ├── layout/
+│   │   └── AuthLayout.jsx
+│   │
+│   ├── pages/
+│   │   └── Login/
+│   │       ├── Login.jsx
+│   │       ├── Login.css
+│   │       └── index.js
+│   │
+│   ├── services/
+│   │   └── authService.js
+│   │
+│   ├── styles/
+│   │   ├── variables.css
+│   │   └── global.css
+│   │
+│   ├── App.jsx
+│   ├── main.jsx
+│   └── router.jsx (si usas React Router)
+│
+└── package.json
+
+
 para isntalar dependencias de goolge auth en frontend he usado npm install @react-oauth/google
 y npm install @react-oauth/google jwt-decode
