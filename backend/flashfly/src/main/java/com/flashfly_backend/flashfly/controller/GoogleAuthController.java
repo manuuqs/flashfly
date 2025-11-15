@@ -1,6 +1,8 @@
 package com.flashfly_backend.flashfly.controller;
 
+import com.flashfly_backend.flashfly.dtos.User;
 import com.flashfly_backend.flashfly.service.GoogleAuthService;
+import com.flashfly_backend.flashfly.service.UserService;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 
 @RestController
@@ -17,11 +20,14 @@ import java.util.Map;
 public class GoogleAuthController {
 
     private final GoogleAuthService googleAuthService;
+    private final UserService userService;
 
     @Autowired
-    public GoogleAuthController(GoogleAuthService googleAuthService) {
+    public GoogleAuthController(GoogleAuthService googleAuthService, UserService userService) {
         this.googleAuthService = googleAuthService;
+        this.userService = userService;
     }
+
 
     /**
      * Endpoint para verificar el token de Google enviado desde el frontend
@@ -36,13 +42,25 @@ public class GoogleAuthController {
                 return ResponseEntity.badRequest().body(Map.of("error", "Token inválido"));
             }
 
-            // Datos básicos del usuario extraídos del payload
-            Map<String, Object> userData = new HashMap<>();
-            userData.put("email", payload.getEmail());
-            userData.put("name", payload.get("name"));
-            userData.put("picture", payload.get("picture"));
+            String email = payload.getEmail();
+            String name = (String) payload.get("name");
+            String picture = (String) payload.get("picture");
 
-            return ResponseEntity.ok(userData);
+            // 🔹 Verificar si el usuario ya existe
+            User user = userService.createOrUpdateGoogleUser(
+                    payload.getEmail(),
+                    payload.get("name").toString(),
+                    payload.get("picture").toString()
+            );
+
+            // Aquí podrías generar un JWT si quieres
+            Map<String, Object> response = new HashMap<>();
+            response.put("id", user.getId());
+            response.put("email", user.getEmail());
+            response.put("name", user.getName());
+            response.put("picture", user.getPicture());
+
+            return ResponseEntity.ok(response);
 
         } catch (Exception e) {
             e.printStackTrace();
