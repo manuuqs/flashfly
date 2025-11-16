@@ -1,18 +1,26 @@
 package com.flashfly_backend.flashfly;
 
+
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
+import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
+@Testcontainers
 @SpringBootTest
-@TestPropertySource(properties = {
-        "spring.data.mongodb.uri=mongodb://localhost:27017/test",
-        "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration"
-})
 public class FlashflyBackendApplicationTests {
+
+    @Container
+    static MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6");
+
+    static {
+        mongoDBContainer.start();
+        System.setProperty("spring.data.mongodb.uri", mongoDBContainer.getReplicaSetUrl());
+    }
 
     @Test
     void contextLoads() {
-        // Test sin necesidad de MongoDB
+        // Test con MongoDB real
     }
 }
