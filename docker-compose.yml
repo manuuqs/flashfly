@@ -8,30 +8,24 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - db-postgres   # 🔁 cambia aquí a "db-mysql" si quieres usar MySQL
+      - mongo
     env_file:
       - .env
     environment:
-      # Para PostgreSQL
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db-postgres:5432/flashfly
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+      SPRING_DATA_MONGODB_URI: mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/flashfly?authSource=admin
 
-  # 🗄️ Base de datos PostgreSQL
-  db-postgres:
-    image: postgres:15
-    container_name: flashfly-postgres
+  mongo:
+    image: mongo:6
+    container_name: flashfly-mongo
     restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: flashfly
     ports:
-      - "5432:5432"
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: ${MONGO_DB}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - mongodata:/data/db
 
   frontend:
     build:
@@ -48,6 +42,6 @@ services:
 
 # 🔁 Volúmenes persistentes (opcional)
 volumes:
-  pgdata:
-#  mysqldata:
+  mongodata:
+
 
