@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
-import "./Login.css";
+import "../../styles/Login.css";
 import GoogleLoginButton from "./GoogleLoginButton";
+import { Link } from "react-router-dom";
 
 export default function Login() {
     const containerRef = useRef();
@@ -112,6 +113,12 @@ export default function Login() {
 
                     <p>
                         ¿No tienes cuenta? <span onClick={handleRegister} style={{cursor: "pointer", color: "blue"}}>Regístrate</span>
+                    </p>
+                    <p style={{ marginTop: "10px" }}>
+                        ¿Olvidaste tu contraseña?{" "}
+                        <Link to="/forgot-password" style={{ color: "blue" }}>
+                            Recuperarla
+                        </Link>
                     </p>
                 </form>
             </div>

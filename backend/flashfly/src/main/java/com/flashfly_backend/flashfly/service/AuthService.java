@@ -1,13 +1,17 @@
 package com.flashfly_backend.flashfly.service;
 
+import com.flashfly_backend.flashfly.dtos.PasswordResetToken;
 import com.flashfly_backend.flashfly.dtos.User;
+import com.flashfly_backend.flashfly.repository.PasswordResetTokenRepository;
 import com.flashfly_backend.flashfly.repository.UserRepository;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class AuthService {
@@ -15,14 +19,21 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final GoogleAuthService googleAuthService;
+    private final PasswordResetTokenRepository tokenRepository;
+    private final EmailService emailService;
 
     @Autowired
     public AuthService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
-                       GoogleAuthService googleAuthService) {
+                       GoogleAuthService googleAuthService,
+                       PasswordResetTokenRepository tokenRepository,
+                       EmailService emailService) {
+
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.googleAuthService = googleAuthService;
+        this.tokenRepository = tokenRepository;
+        this.emailService = emailService;
     }
 
     // 🔹 Registro tradicional
@@ -86,12 +97,55 @@ public class AuthService {
         }
     }
 
+    // --------------------------
+    //  🔹 Forgot Password
+    // --------------------------
+    public String forgotPassword(String email) {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
 
-    // 🔹 Verificar si email existe
-    public boolean emailExists(String email) {
-        return userRepository.findByEmail(email).isPresent();
+        if (optionalUser.isEmpty()) {
+            // ❗ No revelar si el email existe
+            return "Si el email existe, hemos enviado un enlace de recuperación.";
+        }
+
+        User user = optionalUser.get();
+
+        String token = UUID.randomUUID().toString();
+
+        PasswordResetToken resetToken = new PasswordResetToken(token, user);
+        tokenRepository.save(resetToken);
+
+        String link = "http://localhost/reset-password?token=" + token;
+
+        emailService.sendEmail(
+                email,
+                "Recuperar contraseña",
+                "Haz clic en el siguiente enlace para cambiar tu contraseña:\n\n" + link);
+
+        return "Se ha enviado un enlace a tu correo.";
     }
 
+    // --------------------------
+    //  🔹 Reset Password
+    // --------------------------
+    public String resetPassword(String token, String newPassword) {
+
+        PasswordResetToken resetToken = tokenRepository.findByToken(token)
+                .orElseThrow(() -> new RuntimeException("Token inválido."));
 
 
+        // verificar expiración
+        if (resetToken.getExpiration().isBefore(LocalDateTime.now())) {
+            tokenRepository.delete(resetToken);
+            throw new RuntimeException("El token ha expirado.");
+        }
+
+        User user = resetToken.getUser();
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        tokenRepository.delete(resetToken);
+
+        return "Contraseña actualizada correctamente.";
+    }
 }

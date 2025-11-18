@@ -69,6 +69,17 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> body) {
+        return ResponseEntity.ok(authService.forgotPassword(body.get("email")));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestBody Map<String, String> body) {
+        authService.resetPassword(body.get("token"), body.get("password"));
+        return ResponseEntity.ok("Contraseña actualizada correctamente");
+    }
+
     // 🔹 Método auxiliar para crear respuesta
     private Map<String, Object> createUserResponse(User user) {
         Map<String, Object> response = new HashMap<>();

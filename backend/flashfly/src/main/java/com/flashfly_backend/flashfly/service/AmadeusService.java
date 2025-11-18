@@ -17,8 +17,8 @@ public class AmadeusService {
             @Value("${amadeus.client-id}") String apiKey,
             @Value("${amadeus.client-secret}") String apiSecret
     ) {
-        System.out.println("API KEY: " + apiKey);
-        System.out.println("API SECRET: " + apiSecret);
+       // System.out.println("API KEY: " + apiKey);
+       // System.out.println("API SECRET: " + apiSecret);
         this.amadeus = Amadeus.builder(
                 apiKey, apiSecret)
                 .build();
