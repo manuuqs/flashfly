@@ -1,6 +1,8 @@
+
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import "../styles/ResetPassword.css";
+import api from "../api/axiosConfig";
 
 export default function ResetPassword() {
     const [params] = useSearchParams();
@@ -21,20 +23,13 @@ export default function ResetPassword() {
         setLoading(true);
 
         try {
-            const res = await fetch("http://localhost:8080/api/auth/reset-password", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ token, newPassword: password }),
+            const res = await api.post("/auth/reset-password", {
+                token,
+                newPassword: password
             });
 
-            const data = await res.json();
-
-            if (res.ok) {
-                alert("Contraseña restablecida correctamente. Ya puedes iniciar sesión.");
-                window.location.href = "/login";
-            } else {
-                alert("Error: " + data.error);
-            }
+            alert("Contraseña restablecida correctamente. Ya puedes iniciar sesión.");
+            window.location.href = "/login";
         } catch (err) {
             alert("Error al conectar con el servidor.");
             console.error(err);
@@ -59,9 +54,7 @@ export default function ResetPassword() {
         <div className="reset-container">
             <form className="reset-box" onSubmit={handleSubmit}>
                 <h2>Restablecer contraseña</h2>
-
                 <p>Introduce tu nueva contraseña.</p>
-
                 <input
                     type="password"
                     placeholder="Nueva contraseña"
@@ -70,7 +63,6 @@ export default function ResetPassword() {
                     required
                     disabled={loading}
                 />
-
                 <input
                     type="password"
                     placeholder="Confirmar contraseña"
@@ -79,11 +71,9 @@ export default function ResetPassword() {
                     required
                     disabled={loading}
                 />
-
                 <button type="submit" disabled={loading}>
                     {loading ? "Guardando..." : "Cambiar contraseña"}
                 </button>
-
                 <a className="back-login" href="/login">
                     ← Volver al inicio de sesión
                 </a>

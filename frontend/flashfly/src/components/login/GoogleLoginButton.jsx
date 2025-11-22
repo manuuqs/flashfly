@@ -1,30 +1,23 @@
+
 import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
+import api from "../../api/axiosConfig";
 
 export default function GoogleLoginButton({ disabled }) {
     const handleGoogleSuccess = async (credentialResponse) => {
-        const token = credentialResponse.credential;
-        const userInfo = jwtDecode(token);
+        const tokenGoogle = credentialResponse.credential;
+        const userInfo = jwtDecode(tokenGoogle);
 
         console.log("👤 Usuario de Google:", userInfo);
 
         try {
-            const res = await fetch("http://localhost:8080/api/auth/google", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ token }),
-            });
+            const res = await api.post("/auth/google", { token: tokenGoogle });
+            const data = res.data;
 
-            const data = await res.json();
-
-            if (res.ok) {
-                localStorage.setItem("user", JSON.stringify(data));
-                alert(`¡Bienvenido, ${data.name}!`);
-                // Redirigir al dashboard
-                window.location.href = "/dashboard";
-            } else {
-                alert(`Error: ${data.error}`);
-            }
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("user", JSON.stringify(data.user));
+            alert(`¡Bienvenido, ${data.user.name}!`);
+            window.location.href = "/dashboard";
         } catch (err) {
             console.error("Error al conectar con el backend:", err);
             alert("Error al conectar con el servidor");

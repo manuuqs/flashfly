@@ -2,6 +2,7 @@ package com.flashfly_backend.flashfly.service;
 
 import com.flashfly_backend.flashfly.dtos.PasswordResetToken;
 import com.flashfly_backend.flashfly.dtos.User;
+import com.flashfly_backend.flashfly.exception.UserAlreadyExistsException;
 import com.flashfly_backend.flashfly.repository.PasswordResetTokenRepository;
 import com.flashfly_backend.flashfly.repository.UserRepository;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
@@ -39,7 +40,7 @@ public class AuthService {
     // 🔹 Registro tradicional
     public User registerUser(String name, String email, String password) {
         if (userRepository.findByEmail(email).isPresent()) {
-            throw new RuntimeException("El usuario ya existe");
+            throw new UserAlreadyExistsException("El usuario ya está registrado");
         }
 
         User user = new User();
