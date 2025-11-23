@@ -1,3 +1,4 @@
+
 name: CI
 
 on:
@@ -47,7 +48,7 @@ jobs:
       - name: Build backend
         working-directory: ./backend/flashfly
         env:
-          SPRING_DATA_MONGODB_URI: mongodb://localhost:27017/flashfly
+          SPRING_DATA_MONGODB_URI: mongodb://${{ secrets.MONGO_INITDB_ROOT_USERNAME }}:${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}@localhost:27017/flashfly?authSource=admin
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
         run: |
           mvn -B clean package -DskipTests=true
@@ -58,18 +59,16 @@ jobs:
           name: backend-jar
           path: backend/flashfly/target/*.jar
 
-      - name: Install Docker Compose
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker-compose
-      
-
       - name: Build Docker images
-        run: docker-compose build
+        env:
+          MONGO_INITDB_ROOT_USERNAME: ${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
+          MONGO_INITDB_ROOT_PASSWORD: ${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
+          MONGO_DB: flashfly
+          REACT_APP_BACKEND_URL: http://localhost:8080
+        run: docker compose build
 
   frontend:
     runs-on: ubuntu-latest
-    # Paralelización (sin needs: backend)
     steps:
       - uses: actions/checkout@v4
 
@@ -101,3 +100,4 @@ jobs:
         with:
           name: frontend-build
           path: frontend/flashfly/dist
+
