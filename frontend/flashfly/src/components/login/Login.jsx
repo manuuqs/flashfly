@@ -1,6 +1,8 @@
 import { useRef, useState } from "react";
-import "./Login.css";
+import "../../styles/Login.css";
 import GoogleLoginButton from "./GoogleLoginButton";
+import { Link } from "react-router-dom";
+import api from "../../api/axiosConfig";
 
 export default function Login() {
     const containerRef = useRef();
@@ -17,25 +19,17 @@ export default function Login() {
         setLoading(true);
 
         try {
-            const res = await fetch("http://localhost:8080/api/auth/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    email: loginData.email,
-                    password: loginData.password
-                }),
+            const res = await api.post("/auth/login", {
+                email: loginData.email,
+                password: loginData.password
             });
 
-            const data = await res.json();
+            const data = res.data;
 
-            if (res.ok) {
-                localStorage.setItem("user", JSON.stringify(data));
-                alert(`¡Bienvenido, ${data.name}!`);
-                // Redirigir al dashboard o página principal
-                window.location.href = "/dashboard";
-            } else {
-                alert(`Error: ${data.error}`);
-            }
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("user", JSON.stringify(data.user));
+            alert(`¡Bienvenido, ${data.user.name}!`);
+            window.location.href = "/dashboard";
         } catch (err) {
             console.error("Error al iniciar sesión:", err);
             alert("Error al conectar con el servidor");
@@ -44,39 +38,44 @@ export default function Login() {
         }
     };
 
+
     // 🔹 Registro tradicional
     const handleRegisterSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
 
         try {
-            const res = await fetch("http://localhost:8080/api/auth/register", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    name: registerData.name,
-                    email: registerData.email,
-                    password: registerData.password
-                }),
+            const res = await api.post("/auth/register", {
+                name: registerData.name,
+                email: registerData.email,
+                password: registerData.password
             });
 
-            const data = await res.json();
+            const data = res.data;
 
-            if (res.ok) {
-                localStorage.setItem("user", JSON.stringify(data));
-                alert(`¡Cuenta creada exitosamente para ${data.name}!`);
-                // Redirigir al dashboard o página principal
-                window.location.href = "/dashboard";
-            } else {
-                alert(`Error: ${data.error}`);
-            }
+            // Guardar token y usuario
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("user", JSON.stringify(data.user));
+
+            alert(`¡Cuenta creada exitosamente para ${data.user.name}!`);
+            window.location.href = "/dashboard";
+
         } catch (err) {
+            // Axios coloca el status en err.response.status
+            if (err.response && err.response.status === 409) {
+                alert(err.response.data.error); // "El usuario ya está registrado"
+            } else if (err.response) {
+                alert(`Error: ${err.response.data.error || "Error desconocido"}`);
+            } else {
+                alert("Error al conectar con el servidor");
+            }
+
             console.error("Error al registrar:", err);
-            alert("Error al conectar con el servidor");
         } finally {
             setLoading(false);
         }
     };
+
 
     return (
         <div className="container" ref={containerRef}>
@@ -110,8 +109,11 @@ export default function Login() {
 
                     <GoogleLoginButton disabled={loading} />
 
-                    <p>
-                        ¿No tienes cuenta? <span onClick={handleRegister} style={{cursor: "pointer", color: "blue"}}>Regístrate</span>
+                    <p style={{ marginTop: "10px" }}>
+                        ¿Olvidaste tu contraseña?{" "}
+                        <Link to="/forgot-password" style={{ color: "blue" }}>
+                            Recuperarla
+                        </Link>
                     </p>
                 </form>
             </div>
@@ -153,10 +155,6 @@ export default function Login() {
                     </div>
 
                     <GoogleLoginButton disabled={loading} />
-
-                    <p>
-                        ¿Ya tienes cuenta? <span onClick={handleLogin} style={{cursor: "pointer", color: "blue"}}>Inicia sesión</span>
-                    </p>
                 </form>
             </div>
 

@@ -178,3 +178,36 @@ flashfly/
 
 para isntalar dependencias de goolge auth en frontend he usado npm install @react-oauth/google
 y npm install @react-oauth/google jwt-decode
+
+
+
+DIAGRAMA LOGIN
+
+✅ Explicación del flujo
+
+
+Registro tradicional:
+
+El usuario envía name, email, password.
+El backend crea el usuario en MongoDB y genera un JWT.
+Devuelve {token, user} al frontend.
+El frontend guarda el token y lo usa en peticiones protegidas.
+
+
+
+Login tradicional:
+
+El usuario envía email, password.
+El backend valida credenciales y genera JWT.
+Devuelve {token, user}.
+
+
+
+Login con Google:
+
+El frontend obtiene el ID Token de Google.
+Lo envía al backend.
+El backend valida el token con Google, crea/actualiza el usuario y genera JWT.
+Devuelve {token, user}.
+
+![img_1.png](img_1.png)
